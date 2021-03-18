@@ -1,19 +1,19 @@
 ---
-page_title: "scaffolding Provider"
+page_title: "Provider"
 subcategory: ""
 description: |-
   
 ---
 
-# scaffolding Provider
+# apigwdeployment Provider
 
 
 
 ## Example Usage
 
 ```terraform
-provider "scaffolding" {
-  # example configuration here
+provider "apigwdeployment" {
+  
 }
 ```
 
