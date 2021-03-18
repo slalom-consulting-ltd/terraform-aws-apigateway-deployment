@@ -5,8 +5,9 @@ import (
 	"flag"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/hashicorp/terraform-provider-scaffolding/internal/provider"
+	apigwdeployment "github.com/slalom-consulting-ltd/terraform-aws-apigateway-deploymentapigwdeployment"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
@@ -34,7 +35,13 @@ func main() {
 	flag.BoolVar(&debugMode, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()
 
-	opts := &plugin.ServeOpts{ProviderFunc: provider.New(version)}
+	// opts := &plugin.ServeOpts{ProviderFunc: provider.New(version)}
+
+	opts := &plugin.ServeOpts{
+		ProviderFunc: func() *schema.Provider {
+			return apigwdeployment.Provider()
+		},
+	}
 
 	if debugMode {
 		// TODO: update this string with the full name of your provider as used in your configs
