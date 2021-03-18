@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	apigwdeployment "github.com/slalom-consulting-ltd/terraform-aws-apigateway-deploymentapigwdeployment"
+	"github.com/slalom-consulting-ltd/terraform-aws-apigateway-deployment/apigwdeployment"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
