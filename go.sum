@@ -69,6 +69,8 @@ github.com/aws/aws-sdk-go-v2/credentials v1.1.2 h1:YoNqfhxAJGZI+lStIbqgx30UcCqQ8
 github.com/aws/aws-sdk-go-v2/credentials v1.1.2/go.mod h1:hofjw//lM0XLplgvzPPMA7oD0doQU1QpaIK1nweEEWg=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.0.3 h1:d3bKAGy4XdJyK8hz3Nx3WJJ4TCmYp2498G4mFY5wly0=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.0.3/go.mod h1:Zr1Mj+KUMGVQ+WJvTT68EZJxqhjiie2PWSPGEUPaNY0=
+github.com/aws/aws-sdk-go-v2/service/apigateway v1.1.2 h1:HLLXaDntRmxE+ipJE0PaQm5s0EkxgCc2CdkjgYp+wuo=
+github.com/aws/aws-sdk-go-v2/service/apigateway v1.1.2/go.mod h1:tSUFOanfmaa5h3b4VhH505Bm/aO2yNk6sXUDRRfwZP4=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.0.3 h1:dST4y8pZKZdTPs4uwXmGCJmpycz1SHKmCSIhf3GqHEo=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.0.3/go.mod h1:C50Z41fJaJ7WgaeeCulOGAU3q4+4se4B3uOPFdhBi2I=
 github.com/aws/aws-sdk-go-v2/service/sso v1.1.2 h1:9BnjX/ALn5uLo2DbgkwMpUkPL1VLQVBXcjZxqJBhf44=
