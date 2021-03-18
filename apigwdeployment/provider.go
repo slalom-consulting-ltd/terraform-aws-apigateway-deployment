@@ -18,7 +18,7 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"apigwdeployment_methods": resourceAwsApiGatewayDeployment(),
+			"apigwdeployment_methods": resourceSlalomAwsApiGatewayDeployment(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,

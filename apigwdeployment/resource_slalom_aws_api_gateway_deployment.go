@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAwsApiGatewayDeployment() *schema.Resource {
+func resourceSlalomAwsApiGatewayDeployment() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceAwsApiGatewayDeploymentCreate,
 		Read:   resourceAwsApiGatewayDeploymentRead,
