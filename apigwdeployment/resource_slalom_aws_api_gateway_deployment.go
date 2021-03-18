@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway/types"
+	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -124,9 +125,7 @@ func resourceAwsApiGatewayDeploymentCreate(d *schema.ResourceData, meta interfac
 		return fmt.Errorf("Error creating API Gateway Deployment: %s", err)
 	}
 	_ = deployment
-
-	return nil
-	// return resourceAwsApiGatewayDeploymentRead(d, meta)
+	return resourceAwsApiGatewayDeploymentRead(d, meta)
 }
 
 func resourceAwsApiGatewayDeploymentRead(d *schema.ResourceData, meta interface{}) error {
@@ -150,45 +149,47 @@ func resourceAwsApiGatewayDeploymentRead(d *schema.ResourceData, meta interface{
 	}
 	log.Printf("[DEBUG] Received API Gateway Deployment: %s", out)
 	d.Set("description", out.Description)
-	// stageName := d.Get("stage_name").(string)
-	// d.Set("invoke_url", buildApiGatewayInvokeURL(meta.(*AWSClient), restApiId, stageName))
-	// executionArn := arn.ARN{
-	//  Partition: meta.(*AWSClient).partition,
-	//  Service:   "execute-api",
-	//  Region:    meta.(*AWSClient).region,
-	//  AccountID: meta.(*AWSClient).accountid,
-	//  Resource:  fmt.Sprintf("%s/%s", restApiId, stageName),
-	// }.String()
-	// d.Set("execution_arn", executionArn)
+	stageName := d.Get("stage_name").(string)
+	hostname := fmt.Sprintf("%s.%s.%s", fmt.Sprintf("%s.execute-api", restApiId), client.region, client.dnsSuffix)
+
+	d.Set("invoke_url", fmt.Sprintf("https://%s/%s", hostname, stageName))
+	executionArn := arn.ARN{
+		Partition: meta.(*AWSClient).partition,
+		Service:   "execute-api",
+		Region:    client.region,
+		AccountID: meta.(*AWSClient).accountid,
+		Resource:  fmt.Sprintf("%s/%s", restApiId, stageName),
+	}.String()
+	d.Set("execution_arn", executionArn)
 	if err := d.Set("created_date", out.CreatedDate.Format(time.RFC3339)); err != nil {
 		log.Printf("[DEBUG] Error setting created_date: %s", err)
 	}
 	return nil
 }
 
-// func resourceAwsApiGatewayDeploymentUpdateOperations(d *schema.ResourceData) []*apigateway.PatchOperation {
-//  operations := make([]*apigateway.PatchOperation, 0)
-//  if d.HasChange("description") {
-//    operations = append(operations, &apigateway.PatchOperation{
-//      Op:    aws.String(apigateway.OpReplace),
-//      Path:  aws.String("/description"),
-//      Value: aws.String(d.Get("description").(string)),
-//    })
-//  }
-//  return operations
-// }
+func resourceAwsApiGatewayDeploymentUpdateOperations(d *schema.ResourceData) []*apigateway.PatchOperation {
+	operations := make([]*apigateway.PatchOperation, 0)
+	if d.HasChange("description") {
+		operations = append(operations, &apigateway.PatchOperation{
+			Op:    aws.String(apigateway.OpReplace),
+			Path:  aws.String("/description"),
+			Value: aws.String(d.Get("description").(string)),
+		})
+	}
+	return operations
+}
 
 func resourceAwsApiGatewayDeploymentUpdate(d *schema.ResourceData, meta interface{}) error {
-	// conn := meta.(*AWSClient).apigatewayconn
-	// log.Printf("[DEBUG] Updating API Gateway API Key: %s", d.Id())
-	// _, err := conn.UpdateDeployment(&apigateway.UpdateDeploymentInput{
-	//  DeploymentId:    aws.String(d.Id()),
-	//  RestApiId:       aws.String(d.Get("rest_api_id").(string)),
-	//  PatchOperations: resourceAwsApiGatewayDeploymentUpdateOperations(d),
-	// })
-	// if err != nil {
-	//  return err
-	// }
+	conn := meta.(*AWSClient).apigatewayconn
+	log.Printf("[DEBUG] Updating API Gateway API Key: %s", d.Id())
+	_, err := conn.UpdateDeployment(&apigateway.UpdateDeploymentInput{
+		DeploymentId:    aws.String(d.Id()),
+		RestApiId:       aws.String(d.Get("rest_api_id").(string)),
+		PatchOperations: resourceAwsApiGatewayDeploymentUpdateOperations(d),
+	})
+	if err != nil {
+		return err
+	}
 	return resourceAwsApiGatewayDeploymentRead(d, meta)
 }
 func resourceAwsApiGatewayDeploymentDelete(d *schema.ResourceData, meta interface{}) error {
