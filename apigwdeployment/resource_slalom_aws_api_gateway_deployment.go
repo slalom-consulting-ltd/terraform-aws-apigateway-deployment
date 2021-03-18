@@ -73,18 +73,18 @@ func resourceSlalomAwsApiGatewayDeployment() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"canary_settings_percentTraffic": {
+			"canary_settings_percent_traffic": {
 				Type:     schema.TypeFloat,
 				Optional: true,
 			},
 
-			"canary_settings_stageVariableOverrides": {
+			"canary_settings_stage_variable_overrides": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
-			"canary_settings_useStageCache": {
+			"canary_settings_use_stage_cache": {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
@@ -102,7 +102,7 @@ func resourceAwsApiGatewayDeploymentCreate(d *schema.ResourceData, meta interfac
 	}
 
 	stageVariablesOverrrides := make(map[string]string)
-	for k, v := range d.Get("canary_settings_stageVariableOverrides").(map[string]interface{}) {
+	for k, v := range d.Get("canary_settings_stage_variable_overrides").(map[string]interface{}) {
 		variables[k] = v.(string)
 	}
 
@@ -112,7 +112,7 @@ func resourceAwsApiGatewayDeploymentCreate(d *schema.ResourceData, meta interfac
 	deployment, err := client.CreateDeployment(context.TODO(), &apigateway.CreateDeploymentInput{
 		CacheClusterEnabled: new(bool),
 		CacheClusterSize:    types.CacheClusterSizeSize0Point5Gb,
-		CanarySettings:      &types.DeploymentCanarySettings{PercentTraffic: d.Get("canary_settings_percentTraffic").(float64), StageVariableOverrides: stageVariablesOverrrides, UseStageCache: d.Get("canary_settings_percentTraffic").(bool)},
+		CanarySettings:      &types.DeploymentCanarySettings{PercentTraffic: d.Get("canary_settings_percent_traffic").(float64), StageVariableOverrides: stageVariablesOverrrides, UseStageCache: d.Get("canary_settings_use_stage_cache").(bool)},
 		Description:         aws.String(d.Get("description").(string)),
 		RestApiId:           aws.String(d.Get("rest_api_id").(string)),
 		StageDescription:    aws.String(d.Get("stage_description").(string)),
