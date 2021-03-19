@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway/types"
+	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -88,6 +89,11 @@ func resourceSlalomAwsApiGatewayDeployment() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+
+			"account_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -120,6 +126,7 @@ func resourceAwsApiGatewayDeploymentCreate(d *schema.ResourceData, meta interfac
 		TracingEnabled:      new(bool),
 		Variables:           variables,
 	})
+
 	if err != nil {
 		return fmt.Errorf("Error creating API Gateway Deployment: %s", err)
 	}
@@ -148,17 +155,18 @@ func resourceAwsApiGatewayDeploymentRead(d *schema.ResourceData, meta interface{
 	}
 	log.Printf("[DEBUG] Received API Gateway Deployment: %s", out)
 	d.Set("description", out.Description)
-	// stageName := d.Get("stage_name").(string)
-	// hostname := fmt.Sprintf("%s.%s.%s", fmt.Sprintf("%s.execute-api", restApiId), cfg.Region, cfg.EndpointResolver)
-	// d.Set("invoke_url", fmt.Sprintf("https://%s/%s", hostname, stageName))
-	// executionArn := arn.ARN{
-	// 	Partition: meta.(*AWSClient).partition,
-	// 	Service:   "execute-api",
-	// 	Region:    cfg.Region,
-	// 	AccountID: cfg.AccountID,
-	// 	Resource:  fmt.Sprintf("%s/%s", restApiId, stageName),
-	// }.String()
-	d.Set("execution_arn", "")
+	stageName := d.Get("stage_name").(string)
+	hostname := fmt.Sprintf("%s.%s.%s", fmt.Sprintf("%s.execute-api", restApiId), cfg.Region, "amazonaws.com")
+	d.Set("invoke_url", fmt.Sprintf("https://%s/%s", hostname, stageName))
+
+	executionArn := arn.ARN{
+		Partition: "aws", //meta.(*AWSClient).partition,
+		Service:   "execute-api",
+		Region:    cfg.Region,
+		AccountID: d.Get("account_id").(string),
+		Resource:  fmt.Sprintf("%s/%s", restApiId, stageName),
+	}.String()
+	d.Set("execution_arn", executionArn)
 	if err := d.Set("created_date", out.CreatedDate.Format(time.RFC3339)); err != nil {
 		log.Printf("[DEBUG] Error setting created_date: %s", err)
 	}
